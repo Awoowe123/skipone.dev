@@ -17,6 +17,7 @@
  *   gitStatus  — "public" | "private" | "soon"
  *   numMuted   — true for contribution projects (dimmed number)
  *   size       — "large" | "small"
+ *   preview    — image URL for card preview (large cards only)
  */
 const PROJECTS_DATA = [
   {
@@ -29,7 +30,8 @@ const PROJECTS_DATA = [
     git: null,
     gitLabel: { ru: "git: откроется в июле", en: "git: opening in July" },
     gitStatus: "soon",
-    size: "large"
+    size: "large",
+    preview: "previews/shkkrit.webp"
   },
   {
     id: "proj-skiponeai",
@@ -42,7 +44,8 @@ const PROJECTS_DATA = [
     git: "https://github.com/Awoowe123/SkipOneAI",
     gitLabel: { ru: "git: Awoowe123/SkipOneAI", en: "git: Awoowe123/SkipOneAI" },
     gitStatus: "public",
-    size: "large"
+    size: "large",
+    preview: "https://opengraph.githubassets.com/1/Awoowe123/SkipOneAI"
   },
   {
     id: "proj-eduplay",
@@ -54,7 +57,8 @@ const PROJECTS_DATA = [
     git: "https://github.com/Awoowe123/EduPlay",
     gitLabel: { ru: "git: Awoowe123/EduPlay", en: "git: Awoowe123/EduPlay" },
     gitStatus: "public",
-    size: "large"
+    size: "large",
+    preview: "previews/eduplay.webp"
   },
   {
     id: "proj-chronos",
@@ -65,7 +69,8 @@ const PROJECTS_DATA = [
     git: null,
     gitLabel: { ru: "git: приватный", en: "git: private" },
     gitStatus: "private",
-    size: "small"
+    size: "small",
+    preview: "previews/chronos.webp"
   },
   {
     id: "proj-chronos-mobile",
@@ -76,6 +81,8 @@ const PROJECTS_DATA = [
     git: null,
     gitLabel: { ru: "git: приватный", en: "git: private" },
     gitStatus: "private",
-    size: "small"
+    size: "small",
+    preview: "previews/chronos-mobile.webp",
+    previewNarrow: true
   }
 ];

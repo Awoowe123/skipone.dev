@@ -62,6 +62,16 @@ function buildProjectCards() {
       inner.appendChild(stack);
     }
 
+    // Preview hover overlay (all cards with preview)
+    if (p.preview) {
+      cell.addEventListener('mouseenter', () => {
+        showPreviewOverlay(p.preview, p.title, p.previewNarrow);
+      });
+      cell.addEventListener('mouseleave', () => {
+        hidePreviewOverlay();
+      });
+    }
+
     // Links
     const links = document.createElement('div');
     links.className = 'project__links';
@@ -111,6 +121,36 @@ function buildProjectCards() {
 }
 
 buildProjectCards();
+
+// ─── PREVIEW OVERLAY ─────────────────────────────
+const previewOverlay = document.createElement('div');
+previewOverlay.className = 'preview-overlay';
+previewOverlay.innerHTML = '<div class="preview-overlay__backdrop"></div><div class="preview-overlay__content"><img /><div class="preview-overlay__label"></div></div>';
+document.body.appendChild(previewOverlay);
+
+const previewImg = previewOverlay.querySelector('img');
+const previewLabel = previewOverlay.querySelector('.preview-overlay__label');
+const previewContent = previewOverlay.querySelector('.preview-overlay__content');
+
+function showPreviewOverlay(src, title, narrow) {
+  previewImg.src = src;
+  previewLabel.textContent = title;
+  previewContent.classList.toggle('preview-overlay__content--narrow', !!narrow);
+  previewOverlay.classList.add('preview-overlay--visible');
+}
+function hidePreviewOverlay() {
+  previewOverlay.classList.remove('preview-overlay--visible');
+}
+
+// Preload all preview images
+if (typeof PROJECTS_DATA !== 'undefined') {
+  PROJECTS_DATA.forEach(p => {
+    if (p.preview && !p.preview.startsWith('http')) {
+      const img = new Image();
+      img.src = p.preview;
+    }
+  });
+}
 
 // ─── BUILD STACK BADGES ──────────────────────────
 function buildStackBadges() {

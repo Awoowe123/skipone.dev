@@ -382,6 +382,70 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 0.6rem;
 }
 
+.project__preview {
+  margin-bottom: 0.6rem;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  max-height: 120px;
+}
+.project__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.project__preview:hover img {
+  transform: scale(1.03);
+}
+
+/* ─── Preview Overlay (hover tooltip) ─── */
+.preview-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.preview-overlay--visible {
+  opacity: 1;
+}
+.preview-overlay__backdrop {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+.preview-overlay__content {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 900px;
+  max-height: 85vh;
+  width: 90%;
+}
+.preview-overlay__content--narrow {
+  max-width: 350px;
+}
+.preview-overlay__content img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  display: block;
+}
+.preview-overlay__label {
+  text-align: center;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.05em;
+}
+
 .project__links {
   margin-top: 0;
   display: flex;
