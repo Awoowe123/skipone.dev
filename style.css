@@ -400,18 +400,68 @@ a { color: inherit; text-decoration: none; }
   transform: scale(1.03);
 }
 
-/* ─── Preview Overlay (hover tooltip) ─── */
+/* ─── Preview Tooltip (step 1: small popup near card) ─── */
+.preview-tooltip {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.25s var(--ease-out-expo);
+  transform: translateY(6px);
+}
+.preview-tooltip--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.preview-tooltip--ghost {
+  opacity: 0 !important;
+  pointer-events: auto;
+}
+.preview-tooltip__img {
+  display: block;
+  max-width: 320px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid var(--border-strong);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: var(--cream);
+}
+.preview-tooltip--narrow .preview-tooltip__img {
+  max-width: 180px;
+}
+.preview-tooltip__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 0.03em;
+}
+.preview-tooltip__hint {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--copper);
+  text-align: center;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+/* ─── Preview Fullscreen Overlay (step 2: expand on tooltip hover) ─── */
 .preview-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  z-index: 9000;
+  z-index: 9500;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
 }
 .preview-overlay--visible {
   opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
 }
 .preview-overlay__backdrop {
   position: absolute;
@@ -423,10 +473,14 @@ a { color: inherit; text-decoration: none; }
 .preview-overlay__content {
   position: absolute;
   top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.95);
   max-width: 900px;
   max-height: 85vh;
   width: 90%;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+.preview-overlay--visible .preview-overlay__content {
+  transform: translate(-50%, -50%) scale(1);
 }
 .preview-overlay__content--narrow {
   max-width: 350px;

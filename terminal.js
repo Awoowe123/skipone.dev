@@ -62,13 +62,13 @@ function buildProjectCards() {
       inner.appendChild(stack);
     }
 
-    // Preview hover overlay (all cards with preview)
+    // Preview tooltip (step 1: small popup on card hover)
     if (p.preview) {
-      cell.addEventListener('mouseenter', () => {
-        showPreviewOverlay(p.preview, p.title, p.previewNarrow);
+      cell.addEventListener('mouseenter', (e) => {
+        showPreviewTooltip(p.preview, p.title, p.previewNarrow, cell);
       });
       cell.addEventListener('mouseleave', () => {
-        hidePreviewOverlay();
+        scheduleHideTooltip();
       });
     }
 
@@ -122,25 +122,110 @@ function buildProjectCards() {
 
 buildProjectCards();
 
-// ─── PREVIEW OVERLAY ─────────────────────────────
+// ─── TWO-STEP PREVIEW SYSTEM ─────────────────────
+// Step 1: Tooltip (small popup near card on hover)
+// Step 2: Fullscreen overlay (on tooltip hover)
+
+// --- Tooltip element ---
+const previewTooltip = document.createElement('div');
+previewTooltip.className = 'preview-tooltip';
+previewTooltip.innerHTML = '<img class="preview-tooltip__img" /><div class="preview-tooltip__label"></div><div class="preview-tooltip__hint"></div>';
+document.body.appendChild(previewTooltip);
+
+const tooltipImg = previewTooltip.querySelector('.preview-tooltip__img');
+const tooltipLabel = previewTooltip.querySelector('.preview-tooltip__label');
+const tooltipHint = previewTooltip.querySelector('.preview-tooltip__hint');
+
+// --- Fullscreen overlay element ---
 const previewOverlay = document.createElement('div');
 previewOverlay.className = 'preview-overlay';
 previewOverlay.innerHTML = '<div class="preview-overlay__backdrop"></div><div class="preview-overlay__content"><img /><div class="preview-overlay__label"></div></div>';
 document.body.appendChild(previewOverlay);
 
-const previewImg = previewOverlay.querySelector('img');
-const previewLabel = previewOverlay.querySelector('.preview-overlay__label');
-const previewContent = previewOverlay.querySelector('.preview-overlay__content');
+const overlayImg = previewOverlay.querySelector('img');
+const overlayLabel = previewOverlay.querySelector('.preview-overlay__label');
+const overlayContent = previewOverlay.querySelector('.preview-overlay__content');
 
-function showPreviewOverlay(src, title, narrow) {
-  previewImg.src = src;
-  previewLabel.textContent = title;
-  previewContent.classList.toggle('preview-overlay__content--narrow', !!narrow);
+let tooltipHideTimer = null;
+let overlayHideTimer = null;
+let currentTooltipData = null;
+
+function clearTooltipTimer() {
+  if (tooltipHideTimer) { clearTimeout(tooltipHideTimer); tooltipHideTimer = null; }
+}
+function clearOverlayTimer() {
+  if (overlayHideTimer) { clearTimeout(overlayHideTimer); overlayHideTimer = null; }
+}
+
+function showPreviewTooltip(src, title, narrow, cardEl) {
+  clearTooltipTimer();
+  tooltipImg.src = src;
+  tooltipLabel.textContent = title;
+  tooltipHint.textContent = currentLang === 'ru' ? 'наведите для увеличения' : 'hover to expand';
+  previewTooltip.classList.toggle('preview-tooltip--narrow', !!narrow);
+  currentTooltipData = { src, title, narrow };
+
+  // Position tooltip above the card, centered horizontally
+  const rect = cardEl.getBoundingClientRect();
+  const tooltipW = narrow ? 180 : 320;
+  let left = rect.left + rect.width / 2 - tooltipW / 2;
+  let top = rect.top - 230; // above the card
+
+  // Clamp to viewport
+  if (left < 8) left = 8;
+  if (left + tooltipW > window.innerWidth - 8) left = window.innerWidth - tooltipW - 8;
+  if (top < 8) top = rect.bottom + 8; // flip below if no space above
+
+  previewTooltip.style.left = left + 'px';
+  previewTooltip.style.top = top + 'px';
+  previewTooltip.classList.add('preview-tooltip--visible');
+}
+
+function scheduleHideTooltip() {
+  clearTooltipTimer();
+  tooltipHideTimer = setTimeout(() => {
+    previewTooltip.classList.remove('preview-tooltip--visible');
+    currentTooltipData = null;
+  }, 150); // small delay to allow mouse to reach tooltip
+}
+
+function showFullscreenOverlay() {
+  if (!currentTooltipData) return;
+  clearOverlayTimer();
+  overlayImg.src = currentTooltipData.src;
+  overlayLabel.textContent = currentTooltipData.title;
+  overlayContent.classList.toggle('preview-overlay__content--narrow', !!currentTooltipData.narrow);
   previewOverlay.classList.add('preview-overlay--visible');
+  previewTooltip.classList.add('preview-tooltip--ghost'); // hide visually, keep hit zone
 }
-function hidePreviewOverlay() {
+
+function scheduleHideOverlay() {
+  clearOverlayTimer();
+  overlayHideTimer = setTimeout(() => {
+    previewOverlay.classList.remove('preview-overlay--visible');
+    previewTooltip.classList.remove('preview-tooltip--ghost');
+  }, 100);
+}
+
+// Tooltip hover → show fullscreen
+previewTooltip.addEventListener('mouseenter', () => {
+  clearTooltipTimer(); // keep tooltip alive
+  showFullscreenOverlay();
+});
+
+previewTooltip.addEventListener('mouseleave', () => {
+  scheduleHideTooltip();
+  scheduleHideOverlay();
+});
+
+// Click overlay backdrop to dismiss (overlay covers entire screen, mouseleave won't work)
+previewOverlay.addEventListener('click', () => {
   previewOverlay.classList.remove('preview-overlay--visible');
-}
+  previewTooltip.classList.remove('preview-tooltip--visible', 'preview-tooltip--ghost');
+  currentTooltipData = null;
+  clearOverlayTimer();
+  clearTooltipTimer();
+});
 
 // Preload all preview images
 if (typeof PROJECTS_DATA !== 'undefined') {
