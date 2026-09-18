@@ -8,54 +8,68 @@ const SCRAMBLE_CHARS = 'АБВГДЕЖЗКЛМНПРСТФХЦШ•·—→←�
 
 // STACK_DATA is loaded from stack_data.js
 
-// Project ID Mapping — auto-generated from PROJECTS_DATA
-const PROJ_MAP = {};
-if (typeof PROJECTS_DATA !== 'undefined') {
-  PROJECTS_DATA.forEach(p => { PROJ_MAP[p.title] = p.id; });
-}
+// Known project ids. STACK_DATA patches into projects by id, so a typo in a
+// badge's list is a wire that goes nowhere -- worth one console warning.
+const PROJ_IDS = new Set(
+  typeof PROJECTS_DATA !== 'undefined' ? PROJECTS_DATA.map(p => p.id) : []
+);
 
 // ─── BUILD PROJECT CARDS from projects_data.js ───
 function buildProjectCards() {
   if (typeof PROJECTS_DATA === 'undefined') return;
-  const marker = document.getElementById('projectsContainer');
-  if (!marker) return;
-  const dashboard = marker.parentElement; // .dashboard
+  const rack = document.getElementById('projectsContainer');
+  if (!rack) return;
 
   const lang = document.documentElement.lang || 'ru';
 
+  // Двуязычная подпись: атрибуты data-ru/data-en нужны переключателю языка,
+  // текст ставим сразу на текущем -- иначе до первого переключения пусто.
+  const bilingual = (el, pair) => {
+    el.setAttribute('data-ru', pair.ru);
+    el.setAttribute('data-en', pair.en);
+    el.textContent = pair[lang] || pair.ru;
+    return el;
+  };
+
   PROJECTS_DATA.forEach(p => {
-    const isSmall = p.size === 'small';
     const cell = document.createElement('div');
-    cell.className = `cell cell--project${isSmall ? ' cell--project-sm' : ''}`;
+    cell.className = `cell cell--project${p.muted ? ' cell--project--muted' : ''}`;
     cell.id = p.id;
 
     const inner = document.createElement('div');
     inner.className = 'cell__inner';
 
-    // Number
-    const num = document.createElement('div');
-    num.className = `project__num${p.numMuted ? ' project__num--muted' : ''}`;
-    num.textContent = p.num;
-    inner.appendChild(num);
+    // Заголовок листа: номер и статус, как на настоящем чертеже.
+    const head = document.createElement('div');
+    head.className = 'project__head';
 
-    // Title
+    const sheet = document.createElement('span');
+    sheet.className = 'project__sheet';
+    sheet.textContent = `ЛИСТ ${p.sheet}`;
+    sheet.setAttribute('data-ru', `ЛИСТ ${p.sheet}`);
+    sheet.setAttribute('data-en', `SHEET ${p.sheet}`);
+    if (lang === 'en') sheet.textContent = `SHEET ${p.sheet}`;
+    head.appendChild(sheet);
+
+    const stateText = (typeof PROJECT_STATES !== 'undefined' && PROJECT_STATES[p.state]) || null;
+    if (stateText) {
+      const stamp = document.createElement('span');
+      stamp.className = `project__stamp project__stamp--${p.state}`;
+      head.appendChild(bilingual(stamp, stateText));
+    }
+    inner.appendChild(head);
+
     const title = document.createElement('h3');
     title.className = 'project__title';
-    title.textContent = p.title;
-    inner.appendChild(title);
+    inner.appendChild(bilingual(title, p.title));
 
-    // Description (large cards only)
-    if (p.desc && !isSmall) {
+    if (p.desc) {
       const desc = document.createElement('p');
       desc.className = 'project__desc';
-      desc.setAttribute('data-ru', p.desc.ru);
-      desc.setAttribute('data-en', p.desc.en);
-      desc.textContent = p.desc[lang] || p.desc.ru;
-      inner.appendChild(desc);
+      inner.appendChild(bilingual(desc, p.desc));
     }
 
-    // Stack (large cards only)
-    if (p.stack && !isSmall) {
+    if (p.stack) {
       const stack = document.createElement('div');
       stack.className = 'project__stack';
       stack.textContent = p.stack;
@@ -64,60 +78,45 @@ function buildProjectCards() {
 
     // Preview tooltip (step 1: small popup on card hover)
     if (p.preview) {
-      cell.addEventListener('mouseenter', (e) => {
-        showPreviewTooltip(p.preview, p.title, p.previewNarrow, cell);
+      cell.addEventListener('mouseenter', () => {
+        showPreviewTooltip(p.preview, p.title[lang] || p.title.ru, p.previewNarrow, cell);
       });
       cell.addEventListener('mouseleave', () => {
         scheduleHideTooltip();
       });
     }
 
-    // Links
     const links = document.createElement('div');
     links.className = 'project__links';
 
-    // URL
     if (p.url) {
       const a = document.createElement('a');
       a.href = p.url;
       a.target = '_blank';
-      a.className = `project__url${isSmall ? ' project__url--sm' : ''}`;
+      a.rel = 'noopener noreferrer';
+      a.className = 'project__url';
       a.textContent = p.url.replace('https://', '') + ' ↗';
       links.appendChild(a);
-    } else if (p.urlLabel) {
+    } else if (p.note) {
       const s = document.createElement('span');
       s.className = 'project__url project__url--none';
-      s.setAttribute('data-ru', p.urlLabel.ru);
-      s.setAttribute('data-en', p.urlLabel.en);
-      s.textContent = p.urlLabel[lang] || p.urlLabel.ru;
-      links.appendChild(s);
+      links.appendChild(bilingual(s, p.note));
     }
 
-    // Git
     if (p.git) {
       const a = document.createElement('a');
       a.href = p.git;
       a.target = '_blank';
-      a.className = `project__git project__git--${p.gitStatus || 'public'}`;
-      const label = p.gitLabel ? (p.gitLabel[lang] || p.gitLabel.ru) : p.git.replace('https://github.com/', 'git: ');
-      a.textContent = label + ' ↗';
+      a.rel = 'noopener noreferrer';
+      a.className = 'project__git';
+      a.textContent = p.git.replace('https://github.com/', 'git: ') + ' ↗';
       links.appendChild(a);
-    } else if (p.gitLabel) {
-      const s = document.createElement('span');
-      s.className = `project__git project__git--${p.gitStatus || 'private'}`;
-      s.setAttribute('data-ru', p.gitLabel.ru);
-      s.setAttribute('data-en', p.gitLabel.en);
-      s.textContent = p.gitLabel[lang] || p.gitLabel.ru;
-      links.appendChild(s);
     }
 
     inner.appendChild(links);
     cell.appendChild(inner);
-    dashboard.insertBefore(cell, marker);
+    rack.appendChild(cell);
   });
-
-  // Remove the marker element
-  marker.remove();
 }
 
 buildProjectCards();
@@ -311,8 +310,11 @@ function buildStackBadges() {
       });
 
       item.projects.forEach(projKey => {
-        const cellId = PROJ_MAP[projKey];
-        const projCell = document.getElementById(cellId);
+        if (!PROJ_IDS.has(projKey)) {
+          console.warn(`stack_data: "${item.name}" patches into unknown project "${projKey}"`);
+          return;
+        }
+        const projCell = document.getElementById(projKey);
         if (!projCell) return;
 
         projCell.classList.remove('highlighted-dimmed');
@@ -371,6 +373,7 @@ const COMMANDS = {
       '  <span class="t-copper">about</span>     — Кто я',
       '  <span class="t-copper">stack</span>     — Технологии',
       '  <span class="t-copper">projects</span>  — Мои проекты',
+      '  <span class="t-copper">ops</span>       — Как это держится в бою',
       '  <span class="t-copper">contact</span>   — Связаться',
       '  <span class="t-copper">clear</span>     — Очистить',
     ],
@@ -379,6 +382,7 @@ const COMMANDS = {
       '  <span class="t-copper">about</span>     — About me',
       '  <span class="t-copper">stack</span>     — Tech stack',
       '  <span class="t-copper">projects</span>  — My projects',
+      '  <span class="t-copper">ops</span>       — How it holds up under fire',
       '  <span class="t-copper">contact</span>   — Get in touch',
       '  <span class="t-copper">clear</span>     — Clear screen',
     ],
@@ -425,40 +429,92 @@ const COMMANDS = {
   },
   projects: {
     ru: [
-      '<span class="t-copper">[01]</span> SHKKRIT',
-      '     Платформа расписания ККРИТ',
-      '     <span class="t-green">→ shkkrit.skipone.dev</span>',
-      '     <span class="t-muted">git: откроется в июле</span>',
+      '<span class="t-copper">[01]</span> ЭдуКласс Расписание  <span class="t-muted">в производстве</span>',
+      '     Расписание колледжа, которое переживает смерть сервера',
+      '     <span class="t-green">→ eduklass.ru</span>',
       '',
-      '<span class="t-copper">[02]</span> SkipOneAI',
-      '     AI Telegram-двойник',
+      '<span class="t-copper">[02]</span> Квестник  <span class="t-muted">в производстве</span>',
+      '     Игры на паре: один преподаватель, тридцать телефонов',
+      '     <span class="t-green">→ kvestnik.ru</span>',
+      '',
+      '<span class="t-copper">[03]</span> КВ Лидер  <span class="t-muted">в производстве</span>',
+      '     Панель правки встроена прямо в готовый сайт',
+      '     <span class="t-green">→ kvcg.ru</span>',
+      '',
+      '<span class="t-copper">[04]</span> SkipOneAI  <span class="t-muted">исходник открыт</span>',
+      '     Telegram-двойник: поиск по своим сообщениям, свой слог',
       '     <span class="t-green">→ github.com/Awoowe123/SkipOneAI</span>',
       '',
-      '<span class="t-copper">[03]</span> EduPlay',
-      '     Образовательные игры',
-      '     <span class="t-green">→ eduplay.skipone.dev</span>',
-      '     <span class="t-green">→ github.com/Awoowe123/EduPlay</span>',
-      '',
-      '<span class="t-muted">[M1]</span> ChronOS-Web  <span class="t-green">→ chronos.skipone.dev</span>',
-      '<span class="t-muted">[M2]</span> chronos-mobile  <span class="t-green">→ m.chronos.skipone.dev</span>',
+      '<span class="t-muted">[M1]</span> ChronOS-Web  <span class="t-muted">в разработке</span>',
+      '     Учёт посещаемости колледжа: систему передали мне по моей просьбе',
+      '<span class="t-muted">[M2]</span> chronos-mobile  <span class="t-muted">в разработке</span>',
+      '     Мобильный клиент к тому же учёту',
+      '     <span class="t-muted">закрытый контур, показываю по запросу</span>',
     ],
     en: [
-      '<span class="t-copper">[01]</span> SHKKRIT',
-      '     College Timetable Platform',
-      '     <span class="t-green">→ shkkrit.skipone.dev</span>',
-      '     <span class="t-muted">git: opening in July</span>',
+      '<span class="t-copper">[01]</span> EduKlass Schedule  <span class="t-muted">in production</span>',
+      '     A college timetable that survives the server dying',
+      '     <span class="t-green">→ eduklass.ru</span>',
       '',
-      '<span class="t-copper">[02]</span> SkipOneAI',
-      '     AI Telegram Twin',
+      '<span class="t-copper">[02]</span> Kvestnik  <span class="t-muted">in production</span>',
+      '     Classroom games: one teacher, thirty phones',
+      '     <span class="t-green">→ kvestnik.ru</span>',
+      '',
+      '<span class="t-copper">[03]</span> KVCG  <span class="t-muted">in production</span>',
+      '     The editor is built into the finished site',
+      '     <span class="t-green">→ kvcg.ru</span>',
+      '',
+      '<span class="t-copper">[04]</span> SkipOneAI  <span class="t-muted">source open</span>',
+      '     Telegram twin: retrieval over my own messages, my own voice',
       '     <span class="t-green">→ github.com/Awoowe123/SkipOneAI</span>',
       '',
-      '<span class="t-copper">[03]</span> EduPlay',
-      '     Educational Games',
-      '     <span class="t-green">→ eduplay.skipone.dev</span>',
-      '     <span class="t-green">→ github.com/Awoowe123/EduPlay</span>',
+      '<span class="t-muted">[M1]</span> ChronOS-Web  <span class="t-muted">in development</span>',
+      '     College attendance tracking, handed to me at my request',
+      '<span class="t-muted">[M2]</span> chronos-mobile  <span class="t-muted">in development</span>',
+      '     The mobile client for the same system',
+      '     <span class="t-muted">closed circuit, shown on request</span>',
+    ],
+  },
+  ops: {
+    ru: [
+      '<span class="t-copper">Эксплуатация</span> — отдельная работа, а не приписка к деплою.',
       '',
-      '<span class="t-muted">[M1]</span> ChronOS-Web  <span class="t-green">→ chronos.skipone.dev</span>',
-      '<span class="t-muted">[M2]</span> chronos-mobile  <span class="t-green">→ m.chronos.skipone.dev</span>',
+      '<span class="t-copper">Каждый час</span>      копия расписания уезжает на вторую машину',
+      '<span class="t-copper">Каждую минуту</span>   сторож стучится в боевой сервер и в несколько',
+      '                внешних адресов, чтобы не спутать аварию со своим каналом',
+      '<span class="t-copper">Три отказа</span>      адрес переводится на резерв, резерв встаёт сам',
+      '<span class="t-copper">Раз в неделю</span>    копия разворачивается заново и сверяется с тем,',
+      '                что она сама о себе заявляет',
+      '',
+      '<span class="t-copper">Учение 18.09.2026</span> — сеть на боевом сервере выключена дважды:',
+      '  <span class="t-green">0:00</span>   сервер замолчал',
+      '  <span class="t-green">3:40</span>   три отказа подряд: это не помеха',
+      '  <span class="t-green">4:10</span>   адрес переведён на запасную площадку',
+      '  <span class="t-green">5:30</span>   расписание открыто, полоса честно говорит возраст копии',
+      '  <span class="t-muted">позже</span>  сеть вернулась, адрес вернулся, резерв погашен',
+      '',
+      'Пока учение не проведено, никто не знает, работает ли переключение.',
+      'Поэтому оно проводится на боевом, а не на бумаге.',
+    ],
+    en: [
+      '<span class="t-copper">Operations</span> — a job of its own, not a footnote to the deploy.',
+      '',
+      '<span class="t-copper">Hourly</span>        a copy of the timetable leaves for a second machine',
+      '<span class="t-copper">Every minute</span>  a watchdog probes production and several outside',
+      '              addresses, so an outage is never confused with my own uplink',
+      '<span class="t-copper">Three misses</span>  DNS moves to the standby, the standby raises itself',
+      '<span class="t-copper">Weekly</span>        the copy is restored from scratch and row-counted',
+      '              against what it claims about itself',
+      '',
+      '<span class="t-copper">Drill, 2026-09-18</span> — production network cut twice:',
+      '  <span class="t-green">0:00</span>   the server went quiet',
+      '  <span class="t-green">3:40</span>   three misses in a row: not a glitch',
+      '  <span class="t-green">4:10</span>   the address moved to the standby site',
+      '  <span class="t-green">5:30</span>   timetable open again, a banner stating the copy age',
+      '  <span class="t-muted">later</span>  the network returned, so did the address; standby lowered',
+      '',
+      'Until the drill is run, nobody knows whether the failover works.',
+      'So it is run against production, not on paper.',
     ],
   },
   contact: {
