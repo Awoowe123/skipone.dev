@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkipOne — AI-Augmented Engineer</title>
+  <title>SkipOne — инженер собственных систем</title>
   <meta name="description" content="SkipOne — Full-Stack инженер. Python, TypeScript. Строю продукты от идеи до продакшена.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -26,7 +26,7 @@
       <div class="cell cell--identity" id="cellIdentity">
         <div class="cell__inner">
           <h1 class="identity__name">SkipOne</h1>
-          <p class="identity__role" data-ru="AI-Augmented Engineer" data-en="AI-Augmented Engineer">AI-Augmented Engineer</p>
+          <p class="identity__role" data-ru="инженер собственных систем" data-en="engineer of my own systems">инженер собственных систем</p>
           <div class="titleblock">
             <div class="titleblock__row">
               <span class="titleblock__key" data-ru="Город" data-en="City">Город</span>
@@ -105,42 +105,21 @@
         </div>
       </div>
 
-      <!-- ─── CONSOLE ────────────────────────────────── -->
-      <div class="cell cell--terminal" id="cellTerminal">
-        <div class="cell__inner">
-          <div class="terminal">
-            <div class="terminal__header">
-              <span class="terminal__dot terminal__dot--red"></span>
-              <span class="terminal__dot terminal__dot--yellow"></span>
-              <span class="terminal__dot terminal__dot--green"></span>
-              <span class="terminal__title">skipone@dev ~</span>
-            </div>
-            <!-- Sleeping ASCII Cat -->
-          <pre class="terminal__cat">
-            ⣤⡶⢶⣦⡀
-⠀⠀⠀⣴⡿⠟⠷⠆⣠⠋⠀⠀⠀⢸⣿
-⠀⠀⠀⣿⡄⠀⠀⠀⠈⠀⠀⠀⠀⣾⡿
-⠀⠀⠀⠹⣿⣦⡀⠀⠀⠀⠀⢀⣾⣿
-⠀⠀⠀⠀⠈⠻⣿⣷⣦⣀⣠⣾⡿
-⠀⠀⠀⠀⠀⠀⠀⠉⠻⢿⡿⠟
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⡟⠀⠀⠀⢠⠏⡆⠀⠀⠀⠀⠀⢀⣀⣤⣤⣤⣀⡀
-⠀⠀⠀⠀⠀⡟⢦⡀⠇⠀⠀⣀⠞⠀⠀⠘⡀⢀⡠⠚⣉⠤⠂⠀⠀⠀⠈⠙⢦⡀
-⠀⠀⠀⠀⠀⡇⠀⠉⠒⠊⠁⠀⠀⠀⠀⠀⠘⢧⠔⣉⠤⠒⠒⠉⠉⠀⠀⠀⠀⠹⣆
-⠀⠀⠀⠀⠀⢰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠀⣤⠶⠶⢶⡄⠀⠀⠀⠀⢹⡆
-⠀⣀⠤⠒⠒⢺⠒⠀⠀⠀⠀⠀⠀⠀⠀⠤⠊⠀⢸⠀⡿⠀⡀⠀⣀⡟⠀⠀⠀⠀⢸⡇
-⠈⠀⠀⣠⠴⠚⢯⡀⠐⠒⠚⠉⠀⢶⠂⠀⣀⠜⠀⢿⡀⠉⠚⠉⠀⠀⠀⠀⣠⠟
-⠀⠠⠊⠀⠀⠀⠀⠙⠂⣴⠒⠒⣲⢔⠉⠉⣹⣞⣉⣈⠿⢦⣀⣀⣀⣠⡴⠟</pre>
-            <div class="cat__zzz">Zzz...</div>
-            <div class="terminal__body" id="terminalBody">
-              <div class="terminal__line terminal__line--system">
-                <span data-ru="Введите" data-en="Type">Введите</span> <span class="t-copper">help</span> <span data-ru="для списка команд" data-en="for available commands">для списка команд</span>
-              </div>
-            </div>
-            <div class="terminal__input-row">
-              <span class="terminal__prompt">></span>
-              <input type="text" class="terminal__input" id="terminalInput" autocomplete="off" spellcheck="false">
-              <span class="terminal__ghost" id="terminalGhost"></span>
-            </div>
+      <!-- ─── HERO: the block hand, the line, the numbers ── -->
+      <div class="cell cell--hero" id="cellHero">
+        <div class="cell__inner hero">
+          <div class="hero__stage stage">
+            <svg id="hand" viewBox="-6 6 112 112" role="button" tabindex="0" aria-label="Рука из блоков; щелчок — собирается в слово SkipOne"></svg>
+            <div class="mono hero__hint" data-ru="щёлкни по руке" data-en="click the hand">щёлкни по руке</div>
+          </div>
+          <div class="hero__text">
+            <div class="mono cap" data-ru="системы, а не просто код" data-en="systems, not just code">системы, а не просто код</div>
+            <h2 class="hero__title"><span data-ru="Делаю" data-en="Making it">Делаю</span> <em data-ru="«Круто»" data-en="«Cool»">«Круто»</em><span data-ru=", пока не отсохнут руки" data-en=" until my hands fall off">, пока не отсохнут руки</span> <span class="hero__aside" data-ru="(как та, что слева)" data-en="(like the one on the left)">(как та, что слева)</span></h2>
+            <p data-ru="От идеи до «Вау»" data-en="From idea to «Wow»">От идеи до «Вау»</p>
+          </div>
+          <div class="hero__facts">
+            <div><b data-ru="~500 человек" data-en="~500 people">~500 человек</b><span data-ru="в учебный день открывают расписание одного колледжа: среднее за 08–20.10.2026, пн–сб" data-en="open one college's timetable every school day: average for 8–20 Oct 2026, Mon–Sat">в учебный день открывают расписание одного колледжа: среднее за 08–20.10.2026, пн–сб</span></div>
+            <div><b data-ru="1500+ человек" data-en="1500+ people">1500+ человек</b><span data-ru="в первый день запуска проекта у колледжа, 07.10.2026" data-en="on the project's first day at the college, 7 Oct 2026">в первый день запуска проекта у колледжа, 07.10.2026</span></div>
           </div>
         </div>
       </div>
@@ -163,9 +142,9 @@
     <svg id="patchOverlay" class="patch-overlay" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
 
-  <script src="click_data.js"></script>
   <script src="stack_data.js"></script>
   <script src="projects_data.js"></script>
   <script src="terminal.js"></script>
+  <script src="hand.js"></script>
 </body>
 </html>
