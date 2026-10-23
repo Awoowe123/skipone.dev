@@ -16,23 +16,25 @@
  *   git       — GitHub URL or null
  *   preview   — image URL for the hover preview
  *   muted     — true for work handed over to me, not started by me
+ *   wide      — true to stretch the sheet over two columns of the rack
  */
 const PROJECTS_DATA = [
   {
     id: "proj-eduklass",
     sheet: "01",
     title: { ru: "ЭдуКласс Расписание", en: "EduKlass Schedule" },
-    desc: { ru: "Расписание колледжа, которое переживает смерть сервера", en: "A college timetable that survives the server dying" },
+    desc: { ru: "Расписание пар колледжа. Сайт, админка, боты в Telegram и MAX.", en: "College class timetable. Website, admin panel, Telegram and MAX bots." },
     stack: "Next.js · NestJS · Prisma · PostgreSQL",
     url: "https://eduklass.ru",
     state: "production",
+    wide: true,
     preview: "previews/shkkrit.webp"
   },
   {
     id: "proj-kvestnik",
     sheet: "02",
     title: { ru: "Квестник", en: "Kvestnik" },
-    desc: { ru: "Игры на паре: один преподаватель, тридцать телефонов", en: "Classroom games: one teacher, thirty phones" },
+    desc: { ru: "Викторины на паре в реальном времени.", en: "Live quizzes during class." },
     stack: "Next.js · NestJS · Socket.IO · Redis",
     url: "https://kvestnik.ru",
     state: "production",
@@ -42,7 +44,7 @@ const PROJECTS_DATA = [
     id: "proj-kvcg",
     sheet: "03",
     title: { ru: "КВ Лидер", en: "KVCG" },
-    desc: { ru: "Панель правки встроена прямо в готовый сайт: страница меняется на самой странице", en: "The editor is built into the finished site: the page is edited on the page itself" },
+    desc: { ru: "Лендинг для компании.", en: "Landing page for a company." },
     stack: "Next.js · Three.js · GSAP · Framer Motion",
     url: "https://kvcg.ru",
     state: "production"
@@ -62,27 +64,14 @@ const PROJECTS_DATA = [
   {
     id: "proj-chronos",
     sheet: "M1",
-    title: { ru: "ChronOS-Web", en: "ChronOS-Web" },
-    desc: { ru: "Учёт посещаемости колледжа: систему передали мне по моей просьбе, перебираю изнутри", en: "College attendance tracking: handed to me at my request, being rebuilt from the inside" },
-    stack: "Next.js · Prisma · PostgreSQL",
+    title: { ru: "ChronOS", en: "ChronOS" },
+    desc: { ru: "Учёт посещаемости колледжа. Часть экосистемы ЭдуКласса.", en: "College attendance tracking. Part of the EduKlass ecosystem." },
+    stack: "Next.js · React Native · Prisma · PostgreSQL",
     url: null,
     note: { ru: "закрытый контур, показываю по запросу", en: "closed circuit, shown on request" },
     state: "wip",
     muted: true,
     preview: "previews/chronos.webp"
-  },
-  {
-    id: "proj-chronos-mobile",
-    sheet: "M2",
-    title: { ru: "chronos-mobile", en: "chronos-mobile" },
-    desc: { ru: "Мобильный клиент к тому же учёту: довожу до релиза", en: "The mobile client for the same attendance system: bringing it to a release" },
-    stack: "React Native · TypeScript",
-    url: null,
-    note: { ru: "закрытый контур, показываю по запросу", en: "closed circuit, shown on request" },
-    state: "wip",
-    muted: true,
-    preview: "previews/chronos-mobile.webp",
-    previewNarrow: true
   }
 ];
 

@@ -81,7 +81,11 @@
   const mat = (p) => `matrix(${p.w},0,${-(p.sk || 0) * p.h},${p.h},${p.x + (p.sk || 0) * p.h / 2},${p.y})`;
 
   const HOT = { x: 39, y: 26 };           // index fingertip, hand units
-  const api = { INK, RUST, HAND, LETTERS, WORD, TARGET, EXTRA, HOT, wavePose, wordPose, extraPose, pointPose, mat };
+  // A click waves first (2.2 s, then 0.2 s at rest), then the word turn (5.6 s).
+  const W = 2.4, TOTAL = W + 5.6;
+  const clickPose = (b, i, t) => (t < W ? wavePose(b, t) : wordPose(b, i, t - W));
+  const clickExtra = (e, t) => (t < W ? { ...e, w: 0, h: 0 } : extraPose(e, t - W));
+  const api = { INK, RUST, HAND, LETTERS, WORD, TARGET, EXTRA, HOT, W, TOTAL, clickPose, clickExtra, wavePose, wordPose, extraPose, pointPose, mat };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -107,9 +111,9 @@
     if (!still) setTimeout(() => HAND.forEach((b, i) => animate(els[i], (t) => wavePose(b, t), 2.2)), 500);
     const play = () => {
       if (busy || still) return; busy = true;
-      HAND.forEach((b, i) => animate(els[i], (t) => wordPose(b, i, t), 5.6));
-      EXTRA.forEach((e, n) => animate(extras[n], (t) => extraPose(e, t), 5.6));
-      setTimeout(() => (busy = false), 5600);
+      HAND.forEach((b, i) => animate(els[i], (t) => clickPose(b, i, t), TOTAL));
+      EXTRA.forEach((e, n) => animate(extras[n], (t) => clickExtra(e, t), TOTAL));
+      setTimeout(() => (busy = false), TOTAL * 1000);
     };
     svg.addEventListener('click', play);
     svg.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); } });

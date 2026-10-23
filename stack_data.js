@@ -12,9 +12,9 @@
  */
 const STACK_DATA = [
   { name: 'Python',       color: '#3776AB', icon: 'python',     projects: ['proj-skiponeai'] },
-  { name: 'TypeScript',   color: '#3178C6', icon: 'ts',         projects: ['proj-eduklass', 'proj-kvestnik', 'proj-kvcg', 'proj-chronos', 'proj-chronos-mobile'] },
+  { name: 'TypeScript',   color: '#3178C6', icon: 'ts',         projects: ['proj-eduklass', 'proj-kvestnik', 'proj-kvcg', 'proj-chronos'] },
   { name: 'React',        color: '#61DAFB', icon: 'react',      projects: ['proj-eduklass', 'proj-kvestnik', 'proj-kvcg', 'proj-chronos'] },
-  { name: 'React Native', color: '#61DAFB', icon: 'react',      projects: ['proj-chronos-mobile'] },
+  { name: 'React Native', color: '#61DAFB', icon: 'react',      projects: ['proj-chronos'] },
   { name: 'Next.js',      color: '#808080', icon: 'nextjs',     projects: ['proj-eduklass', 'proj-kvestnik', 'proj-kvcg', 'proj-chronos'] },
   { name: 'NestJS',       color: '#E0234E', icon: 'nestjs',     projects: ['proj-eduklass', 'proj-kvestnik'] },
   { name: 'Prisma',       color: '#2D3748', icon: 'prisma',     projects: ['proj-eduklass', 'proj-kvestnik', 'proj-chronos'] },

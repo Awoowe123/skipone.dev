@@ -22,6 +22,9 @@ function buildProjectCards() {
 
   const lang = document.documentElement.lang || 'ru';
 
+  const count = document.getElementById('sheetCount');
+  if (count) count.textContent = PROJECTS_DATA.length;
+
   // Двуязычная подпись: атрибуты data-ru/data-en нужны переключателю языка,
   // текст ставим сразу на текущем -- иначе до первого переключения пусто.
   const bilingual = (el, pair) => {
@@ -33,7 +36,7 @@ function buildProjectCards() {
 
   PROJECTS_DATA.forEach(p => {
     const cell = document.createElement('div');
-    cell.className = `cell cell--project${p.muted ? ' cell--project--muted' : ''}`;
+    cell.className = `cell cell--project${p.muted ? ' cell--project--muted' : ''}${p.wide ? ' cell--project--wide' : ''}`;
     cell.id = p.id;
 
     const inner = document.createElement('div');
